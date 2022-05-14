@@ -43,11 +43,10 @@ export const QrReader: React.FC<{}> = () => {
 
       const promise = reader.current.decodeFromVideoDevice(deviceId, previewElem as HTMLVideoElement, (result, error) => {
           if(error) {
-              console.warn(`couldn't record due to error: ${error}`)
               return
           }
 
-          console.info(`recorded: ${result}`)
+          console.info("recorded", result)
       })
 
       return () => {

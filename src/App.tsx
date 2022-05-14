@@ -1,12 +1,19 @@
 import React from 'react';
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import './App.css';
-import { QrReader } from './QrReader';
+import { Index } from './pages';
+import { Generate } from './pages/generate';
 
 function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <QrReader />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/generate" element={<Generate />} />
+            <Route path="*" element={<Index />} />
+          </Routes>
+        </BrowserRouter>
       </header>
     </div>
   );
