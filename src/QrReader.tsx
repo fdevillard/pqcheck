@@ -3,10 +3,10 @@ import React from "react";
 
 const findDevice = (devices: Array<MediaDeviceInfo>): MediaDeviceInfo | undefined=> {
     const pred = (info: MediaDeviceInfo): boolean => {
-        if(info.kind != "videoinput") {
+        if(info.kind !== "videoinput") {
             return false
         }
-        console.log(`device: ${info}`)
+        console.log(`device`, info)
         return true;
     }
     return devices.find(pred)
@@ -15,7 +15,6 @@ const findDevice = (devices: Array<MediaDeviceInfo>): MediaDeviceInfo | undefine
 export const QrReader: React.FC<{}> = () => {
   const reader = React.useRef<BrowserQRCodeReader>(new BrowserQRCodeReader());
   const [deviceId, setDeviceId] = React.useState<string|null>(null)
-  const videoElement = React.useRef<HTMLVideoElement | null>(null);
 
   React.useEffect(() => {
       const work = async () => {
