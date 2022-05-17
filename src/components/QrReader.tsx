@@ -12,12 +12,20 @@ const findDevice = (devices: Array<MediaDeviceInfo>): MediaDeviceInfo | undefine
     return devices.find(pred)
 }
 
-export const QrReader: React.FC<{}> = () => {
+type Props = {
+    onScan?: (stored: string) => any
+}
+
+export const QrReader: React.FC<Props> = ({onScan}) => {
   const reader = React.useRef<BrowserQRCodeReader>(new BrowserQRCodeReader());
+  // keep a version always up to date 
+  const _scan = React.useRef(onScan)
+  _scan.current = onScan
+
   const [deviceId, setDeviceId] = React.useState<string|null>(null)
 
   React.useEffect(() => {
-      const work = async () => {
+    const work = async () => {
       const videoInputDevices =
         await BrowserCodeReader.listVideoInputDevices();
       const device= findDevice(videoInputDevices)
@@ -47,6 +55,11 @@ export const QrReader: React.FC<{}> = () => {
           }
 
           console.info("recorded", result)
+
+          const text = result?.getText()
+          if(text) {
+            _scan.current?.(text)
+          }
       })
 
       return () => {

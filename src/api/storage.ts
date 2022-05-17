@@ -1,6 +1,6 @@
 import {Location} from "./model"
 import {sha256} from "js-sha256"
-import { randomUUID } from "crypto"
+import { v4 as uuidv4} from "uuid"
 
 const storage = window.localStorage
 
@@ -9,7 +9,7 @@ export const setLocation = (location: Location): void => {
 }
 
 export const newLocation = (info: string): Location => {
-    const uuid = randomUUID()
+    const uuid = uuidv4()
     console.log(`uuid: ${uuid}`)
     const id = sha256(`${info}-${uuid}`)
     const location: Location = {

@@ -2,13 +2,22 @@ import React from "react";
 import { useSearchParams } from "react-router-dom";
 import QRCode from "react-qr-code";
 import ReactToPrint from "react-to-print";
+import { Location } from "../api/model";
+import { newLocation } from "../api/storage";
 
 export const Generate: React.FC<{}> = () => {
   const [params] = useSearchParams();
   const clean = params.get("info");
+  const [location, setLocation] = React.useState<Location | null>(null)
   const component = React.useRef<any>(null);
 
-  if (clean === null) {
+  React.useEffect(() => {
+    if(clean !== "" && clean !== null) {
+      setLocation(newLocation(clean))
+    }
+  }, [clean])
+
+  if (location === null) {
     return <p>No info, no QR Code.</p>;
   }
 
@@ -19,7 +28,7 @@ export const Generate: React.FC<{}> = () => {
         content={() => component.current}
       />
       <div ref={component} style={{ width: "1cm" }}>
-        <QRCode size={64} value={clean} />
+        <QRCode size={64} value={location.qrCodeId} />
       </div>
     </div>
   );
