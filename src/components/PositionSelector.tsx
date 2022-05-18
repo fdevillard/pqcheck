@@ -6,11 +6,12 @@ import { Location } from "../api/model"
 type Position = Location["position"]
 
 export type PositionSelectorProps = {
-    location: Location;
+    position: Position;
     onPositionUpdate?:  (_: Position) => any;
+    nullLabel?: string
 }
 
-export const PositionSelector: React.FC<PositionSelectorProps> = ({location, onPositionUpdate}) => {
+export const PositionSelector: React.FC<PositionSelectorProps> = ({position, onPositionUpdate, nullLabel = "Unknown 😱"}) => {
     const handle = (_: any, newPosition: string|null) => {
         if(newPosition === "null") {
             newPosition = null
@@ -21,10 +22,10 @@ export const PositionSelector: React.FC<PositionSelectorProps> = ({location, onP
         } 
     }
     return (
-        <ToggleButtonGroup value={location.position || "null"} onChange={handle} exclusive color="primary">
+        <ToggleButtonGroup value={position || "null"} onChange={handle} exclusive color="primary">
             <ToggleButton value="in">In</ToggleButton>
             <ToggleButton value="out">Out</ToggleButton>
-            <ToggleButton value="null">Unknown 😱</ToggleButton>
+            <ToggleButton value="null">{nullLabel}</ToggleButton>
         </ToggleButtonGroup>
     )
 }
