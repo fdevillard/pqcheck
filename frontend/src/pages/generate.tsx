@@ -27,8 +27,8 @@ export const Generate: React.FC<{}> = () => {
         trigger={() => <button>Print QRCode</button>}
         content={() => component.current}
       />
-      <div ref={component} style={{ width: "1cm" }}>
-        <QRCode size={64} value={location.qrCodeId} />
+      <div ref={component}>
+        <QRCode size={120} value={location.qrCodeId} />
       </div>
     </div>
   );
