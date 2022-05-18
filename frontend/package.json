@@ -53,5 +53,11 @@
   },
   "devDependencies": {
     "@types/uuid": "^8.3.4"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.[t|j]sx?$": "babel-jest"
+    },
+    "transformIgnorePatterns": ["node_modules/(?!@shotgunjed)/"]
   }
 }
