@@ -26,6 +26,7 @@ export const QrReader: React.FC<Props> = ({onScan}) => {
 
   React.useEffect(() => {
     const work = async () => {
+      try {
       const videoInputDevices =
         await BrowserCodeReader.listVideoInputDevices();
       const device= findDevice(videoInputDevices)
@@ -34,6 +35,10 @@ export const QrReader: React.FC<Props> = ({onScan}) => {
           return
       }
       setDeviceId(device.deviceId)
+      } catch(exp) {
+        // mainly catched for tests
+        console.error("failed to list the devices", exp)
+      }
     }
     work()
   })

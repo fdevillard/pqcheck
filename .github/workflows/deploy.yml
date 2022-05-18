@@ -1,28 +1,14 @@
-name: Build and Deploy
+name: Deploy
 on:
-  push:
+  workflow_run:
+    workflows: ["Build"]
     branches:
       - main
+    types:
+      - completed
   workflow_dispatch:
 
 jobs:
-  build:
-    name: Build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repo
-        uses: actions/checkout@master
-      - name: Install Dependencies
-        run: cd frontend && npm install
-      - name: Build
-        run: cd frontend && npm run build
-      - name: debug
-        run: ls -la && ls -la frontend
-      - name: Archive Production Artifact
-        uses: actions/upload-artifact@master
-        with:
-          name: build
-          path: frontend/build
   deploy:
     name: Deploy
     needs: build
