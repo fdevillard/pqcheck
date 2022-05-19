@@ -4,8 +4,14 @@ import {Location } from "../api/model"
 import { QrReader } from "../components/QrReader"
 import { StatusUpdater } from "../components/statusUpdater"
 import { PositionSelector } from "../components/PositionSelector"
+import Box from "@mui/material/Box/Box"
+import Typography from "@mui/material/Typography/Typography"
 
-export const Index: React.FC<{}> = () => {
+type Props = {
+    deviceIndex: number 
+}
+
+export const Index: React.FC<Props> = ({deviceIndex}) => {
     const [expectedPosition, setExpectedPosition] = React.useState<Location["position"]>(null)
     const [location, setLocation] = React.useState<Location|null>(null)
     
@@ -39,14 +45,14 @@ export const Index: React.FC<{}> = () => {
     const style = isValid === null ? {} : {backgroundColor: isValid ? "red" : "green"}
     console.log(`style`, style)
 
-    return <div style={style}>
-        <h5>Which position do you expect?</h5>
+    return <Box style={style} sx={{textAlign: "center"}}>
+        <Typography sx={{marginBottom: "1em", marginTop: "1em"}} variant="h4" color="primary">Which position do you expect?</Typography>
         <PositionSelector
             position={expectedPosition}
             onPositionUpdate={onExpectedPositionChange}
             nullLabel="No position to expect"
         />
-        <QrReader onScan={onScan} />
+        <QrReader onScan={onScan} deviceIndex={deviceIndex} />
         {location !== null ? <StatusUpdater position={location.position} onPositionUpdate={onPositionUpdate} /> : null}
-    </div>
+    </Box>
 }

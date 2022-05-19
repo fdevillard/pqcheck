@@ -12,6 +12,9 @@ export const AppBar: React.FC<{}> = () => {
             <Link to="/generate">
                 <Button variant="text">Create</Button>
             </Link>
+            <Link to="/settings">
+                <Button variant="text">Settings</Button>
+            </Link>
         </Toolbar>
     </MuiAppBar>
 )

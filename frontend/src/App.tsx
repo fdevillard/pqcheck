@@ -6,6 +6,7 @@ import { Index } from "./pages";
 import { Generate } from "./pages/generate";
 
 import { ThemeProvider, createTheme } from "@mui/material/styles";
+import { Settings } from "./pages/settings";
 
 const darkTheme = createTheme({
   palette: {
@@ -13,18 +14,49 @@ const darkTheme = createTheme({
   },
 });
 
+type SettingsStore = {
+  // we store the index in the list of device. At least firefox hides the deviceId when the camera is not activated.
+  deviceIndex: number;
+};
+
+const LOCALSTORAGE_DEVICEINDEX_KEY = "settings-deviceIndex";
+
 function App() {
+  const [settings, setSettings] = React.useState<SettingsStore>({
+    deviceIndex: Number(localStorage.getItem(LOCALSTORAGE_DEVICEINDEX_KEY) || 0),
+  });
+
   return (
     <div className="App">
       <ThemeProvider theme={darkTheme}>
         <BrowserRouter>
-          <AppBar />
-          <header className="App-header">
+          <header>
+            <AppBar />
+          </header>
+          <main className="App-main">
             <Routes>
               <Route path="/generate" element={<Generate />} />
-              <Route path="*" element={<Index />} />
+              <Route
+                path="/settings"
+                element={
+                  <Settings
+                    deviceIndex={settings.deviceIndex}
+                    onSelectDeviceIndex={(nDeviceID: number) => {
+                      localStorage.setItem(
+                        LOCALSTORAGE_DEVICEINDEX_KEY,
+                        String(nDeviceID)
+                      );
+                      setSettings((prev) => ({ ...prev, deviceId: nDeviceID }));
+                    }}
+                  />
+                }
+              />
+              <Route
+                path="*"
+                element={<Index deviceIndex={settings.deviceIndex} />}
+              />
             </Routes>
-          </header>
+          </main>
         </BrowserRouter>
       </ThemeProvider>
     </div>
