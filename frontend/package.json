@@ -7,6 +7,7 @@
     "@emotion/styled": "^11.8.1",
     "@fontsource/roboto": "^4.5.7",
     "@mui/material": "^5.8.0",
+    "@mui/system": "^5.8.0",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.2.0",
     "@testing-library/user-event": "^14.2.0",
@@ -58,6 +59,8 @@
     "transform": {
       "^.+\\.[t|j]sx?$": "babel-jest"
     },
-    "transformIgnorePatterns": ["node_modules/(?!@shotgunjed)/"]
+    "transformIgnorePatterns": [
+      "node_modules/(?!@shotgunjed)/"
+    ]
   }
 }

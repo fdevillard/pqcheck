@@ -1,20 +1,32 @@
-import React from 'react';
+import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import './App.css';
-import { Index } from './pages';
-import { Generate } from './pages/generate';
+import "./App.css";
+import { AppBar } from "./components/AppBar";
+import { Index } from "./pages";
+import { Generate } from "./pages/generate";
+
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+
+const darkTheme = createTheme({
+  palette: {
+    mode: "dark",
+  },
+});
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
+      <ThemeProvider theme={darkTheme}>
         <BrowserRouter>
-          <Routes>
-            <Route path="/generate" element={<Generate />} />
-            <Route path="*" element={<Index />} />
-          </Routes>
+          <AppBar />
+          <header className="App-header">
+            <Routes>
+              <Route path="/generate" element={<Generate />} />
+              <Route path="*" element={<Index />} />
+            </Routes>
+          </header>
         </BrowserRouter>
-      </header>
+      </ThemeProvider>
     </div>
   );
 }
