@@ -1,17 +1,16 @@
 name: Deploy
 on:
-  workflow_run:
-    workflows: ["Build"]
+  push:
     branches:
       - main
-    types:
-      - completed
   workflow_dispatch:
 
 jobs:
+  build:
+    uses: ./.github/workflows/build.yml
   deploy:
     name: Deploy
-    needs: build
+    needs: Build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
