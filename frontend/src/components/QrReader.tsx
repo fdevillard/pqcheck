@@ -1,77 +1,84 @@
-import { BrowserCodeReader, BrowserQRCodeReader } from "@zxing/browser";
+import { BrowserQRCodeReader, IScannerControls } from "@zxing/browser";
 import React from "react";
-
-const findDevice = (devices: Array<MediaDeviceInfo>): MediaDeviceInfo | undefined=> {
-    const pred = (info: MediaDeviceInfo): boolean => {
-        if(info.kind !== "videoinput") {
-            return false
-        }
-        console.log(`device`, info)
-        return true;
-    }
-    return devices.find(pred)
-}
+import { findDevices } from "../tools/qrscanner";
 
 type Props = {
-    onScan?: (stored: string) => any
-}
+  onScan?: (stored: string) => any;
+  deviceIndex: number;
+};
 
-export const QrReader: React.FC<Props> = ({onScan}) => {
+export const QrReader: React.FC<Props> = ({ onScan, deviceIndex }) => {
+  const [selectedDeviceId, setSelectedDeviceId] = React.useState<
+    string | undefined
+  >(undefined);
   const reader = React.useRef<BrowserQRCodeReader>(new BrowserQRCodeReader());
-  // keep a version always up to date 
-  const _scan = React.useRef(onScan)
-  _scan.current = onScan
-
-  const [deviceId, setDeviceId] = React.useState<string|null>(null)
+  // keep a version always up to date
+  const _scan = React.useRef(onScan);
+  _scan.current = onScan;
 
   React.useEffect(() => {
+    // ensure no concurrent changes when the component has been unmount
+    let isRunning = true;
     const work = async () => {
-      try {
-      const videoInputDevices =
-        await BrowserCodeReader.listVideoInputDevices();
-      const device= findDevice(videoInputDevices)
-      if(device === undefined) {
-          console.error("no device found", videoInputDevices)
-          return
+      // find the first device if no selected one
+      const devices = await findDevices();
+      console.log("found devices", devices, deviceIndex);
+      const idx = deviceIndex > 0 ? deviceIndex : 0;
+      if (deviceIndex < devices.length) {
+        isRunning && setSelectedDeviceId(devices[idx].deviceId);
       }
-      setDeviceId(device.deviceId)
-      } catch(exp) {
-        // mainly catched for tests
-        console.error("failed to list the devices", exp)
-      }
-    }
-    work()
-  })
+    };
+    work();
+    return () => {
+      isRunning = false;
+    };
+  }, [deviceIndex]);
 
   React.useEffect(() => {
-      if(reader.current === undefined || deviceId === null) {
-          return;
+    let isRunning = true;
+    let promise: Promise<IScannerControls> | undefined = undefined;
+    const work = () => {
+      if (reader.current === undefined || selectedDeviceId === undefined) {
+        return;
       }
 
       const previewElem = document.querySelector("#video-container > video");
-      if(previewElem === null) {
-          console.warn("couldn't locate video element")
-          return
+      if (previewElem === null) {
+        console.warn("couldn't locate video element");
+        return;
       }
 
-      const promise = reader.current.decodeFromVideoDevice(deviceId, previewElem as HTMLVideoElement, (result, error) => {
-          if(error) {
-              return
+      try {
+        promise = reader.current.decodeFromVideoDevice(
+          selectedDeviceId,
+          previewElem as HTMLVideoElement,
+          (result, error) => {
+            if (error) {
+              return;
+            }
+
+            console.info("recorded", result);
+
+            const text = result?.getText();
+            if (text) {
+              isRunning && _scan.current?.(text);
+            }
           }
-
-          console.info("recorded", result)
-
-          const text = result?.getText()
-          if(text) {
-            _scan.current?.(text)
-          }
-      })
-
-      return () => {
-          promise.then(control => control.stop())
+        );
+      } catch (exp) {
+        console.warn("fail to acquire video device", exp);
       }
-  }, [deviceId, reader])
+    };
+    work();
 
+    return () => {
+      isRunning = false;
+      promise?.then(
+        (control) => control.stop(),
+        (exp) => console.warn("failed to run promise", exp)
+      );
+    };
+  }, [reader, selectedDeviceId]);
 
   return (
     <div id="video-container">
